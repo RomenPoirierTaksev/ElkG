@@ -21,15 +21,7 @@ public class GameEvents : MonoBehaviour
         }
     }
 
-    public event Action onToolDrop;
-
-    public void ToolDrop()
-    {
-        if(onToolDrop != null)
-        {
-            onToolDrop();
-        }
-    }
+    
 
     /**
     public event Action onDamageTaken;

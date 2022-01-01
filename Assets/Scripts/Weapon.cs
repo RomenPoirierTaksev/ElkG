@@ -17,7 +17,15 @@ public class Weapon : MonoBehaviour
                 damage = 25f;
                 range = 3f;
                 break;
+
+            default:
+                damage = 5f;
+                range = 1f;
+                break;
+                
         }
+
+
     }
 
     public float getDamage()

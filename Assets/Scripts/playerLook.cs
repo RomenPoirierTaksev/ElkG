@@ -10,7 +10,8 @@ public class playerLook : MonoBehaviour
     public float mouseSensitivity = 3f;
     Transform tr;
     float xRotation = 0f;
-    
+    Inventory inventory;
+
 
     // Start is called before the first frame update
     void Start()
@@ -18,6 +19,7 @@ public class playerLook : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         tr = gameObject.GetComponent<Transform>();
+        inventory = gameObject.GetComponent<Inventory>();
 
     }
 
@@ -34,15 +36,7 @@ public class playerLook : MonoBehaviour
         tr.Rotate(0, mouseX, 0);
         if (Input.GetKeyDown("e"))
         {
-            if (!EquipItem.itemEquiped)
-            {
-                GameEvents.instance.ToolPickUp();
-            }
-            else
-            {
-                GameEvents.instance.ToolDrop();
-            }
-            
+            GameEvents.instance.ToolPickUp();
         }
     }
 }
