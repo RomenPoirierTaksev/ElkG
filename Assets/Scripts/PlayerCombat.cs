@@ -14,7 +14,7 @@ public class PlayerCombat : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             anim.SetTrigger("Swing");
-            Debug.Log("swung");
+            //Debug.Log("swung");
 
             Weapon weapon = null;
 

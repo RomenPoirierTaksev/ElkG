@@ -4,28 +4,25 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    string weaponType;
+    string weaponName;
     float damage;
     float range;
+    Vector3 handPos;
     
     void Start()
     {   
-        weaponType = gameObject.name;
-        switch (weaponType)
+        weaponName = gameObject.name;
+        if (weaponName.ToLower().Contains("sword"))
         {
-            case "Sword":
-                damage = 25f;
-                range = 3f;
-                break;
-
-            default:
-                damage = 5f;
-                range = 1f;
-                break;
-                
+            damage = 25f;
+            range = 3f;
+            handPos = new Vector3(gameObject.transform.localRotation.x - 65, 0, 85);
         }
-
-
+        else
+        {
+            damage = 5f;
+            range = 1f;
+        }
     }
 
     public float getDamage()
@@ -36,5 +33,10 @@ public class Weapon : MonoBehaviour
     public float getRange()
     {
         return range;
+    }
+
+    public Vector3 getHandPos()
+    {
+        return handPos;
     }
 }

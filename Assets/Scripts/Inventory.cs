@@ -9,6 +9,10 @@ public class Inventory : MonoBehaviour
     public bool isFull = false;
     public static int currentIndex = 0;
 
+    void Start()
+    {
+        currentIndex = Mathf.Clamp(currentIndex, 0, inventory.Count);
+    }
     public void addItemToInventory(GameObject item)
     {
         if(inventory.Count < maxInventorySize)
@@ -18,24 +22,14 @@ public class Inventory : MonoBehaviour
             activateInv();
             
         }
-        
-        foreach (KeyValuePair<int, GameObject> i in inventory)
-        {
-            Debug.Log(i);
-        }
     }
 
     public GameObject removeItemFromInventory()
     {
-        inventory.Remove(currentIndex);
+        inventory.Remove(currentIndex, out GameObject removedItem);
         currentIndex--;
-        inventory.TryGetValue(currentIndex, out GameObject removedItem);
         isFull = false;
         activateInv();
-        foreach (KeyValuePair<int, GameObject> i in inventory)
-        {
-            Debug.Log(i);
-        }
         return removedItem;
     }
 
@@ -63,6 +57,28 @@ public class Inventory : MonoBehaviour
 
     void Update()
     {
+        
+        Vector2 mouseWheel = Input.mouseScrollDelta;
+        if (mouseWheel != Vector2.zero)
+        {
+            if (mouseWheel.y < 0)
+            {
+                currentIndex--;
+                if (currentIndex < 0)
+                {
+                    currentIndex = inventory.Count - 1;
+                }
+            }
+            else
+            {
+                currentIndex++;
+                if(currentIndex > inventory.Count -1 )
+                {
+                    currentIndex = 0;
+                }
+            }
+            activateInv();
+        }
         if (Input.anyKeyDown)
         {
             string keyPressed = Input.inputString;
@@ -76,6 +92,7 @@ public class Inventory : MonoBehaviour
 
             }
         }
+         
     }
 
 }

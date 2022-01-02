@@ -37,15 +37,15 @@ public class EquipItem : MonoBehaviour
                 hit.rigidbody.velocity = Vector3.zero;
                 hit.transform.parent = rightHand.transform.parent;
                 hit.transform.localPosition = rightHand.transform.localPosition;
-                hit.transform.localRotation = Quaternion.Euler(new Vector3(0, -90, -rightHand.transform.localRotation.x * 100));
+                hit.transform.localRotation = Quaternion.Euler(hit.transform.gameObject.GetComponent<Weapon>().getHandPos());
                 hit.rigidbody.useGravity = false;
                 hit.transform.parent = rightHand.transform;
-                hit.transform.localPosition = hit.transform.localPosition + Vector3.up * 0.07120773f + Vector3.forward * 0.2400559f;
+                hit.transform.localPosition = hit.transform.localPosition + Vector3.up * 0.07120773f + Vector3.forward * 0.05999654f;
                 hit.collider.enabled = false;
                 itemEquiped = true;
                 equipedItem = hit.transform.gameObject;
                 inventory.addItemToInventory(equipedItem);
-                Debug.Log("Equipped");
+                //Debug.Log("Equipped");
             }
             else
             {
@@ -66,9 +66,9 @@ public class EquipItem : MonoBehaviour
             equipedItem.transform.parent = null;
             equipedItem.GetComponent<Rigidbody>().useGravity = true;
             equipedItem.GetComponent<Collider>().enabled = true;
-            equipedItem.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(300, 70, -10));
+            equipedItem.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, 70, 300));
             equipedItem = inventory.removeItemFromInventory();
-            Debug.Log("Dropped");
+            //Debug.Log("Dropped");
         }
 
     }
