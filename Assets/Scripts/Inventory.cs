@@ -1,33 +1,59 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Inventory : MonoBehaviour
 {
     Dictionary<int, GameObject> inventory = new Dictionary<int, GameObject>();
     public int maxInventorySize = 10;
     public bool isFull = false;
-    public static int currentIndex = 0;
+    int currentlySelected = 0;
+    public Canvas inventoryUI;
 
-    void Start()
-    {
-        currentIndex = Mathf.Clamp(currentIndex, 0, inventory.Count);
-    }
-    public void addItemToInventory(GameObject item)
+    public bool addItemToInventory(GameObject item)
     {
         if(inventory.Count < maxInventorySize)
         {
-            inventory.Add(inventory.Count, item);
-            currentIndex = inventory.Count - 1;
-            activateInv();
-            
+            if(inventory.TryAdd(currentlySelected, item))
+            {
+                updateUI(item);
+                activateInv();
+                return true;
+            }
         }
+        return false;
+    }
+
+    void updateUI()
+    {
+        inventoryUI.transform.GetChild(1).GetChild(currentlySelected + 1).GetChild(0).GetComponent<InventorySlot>().removeItem();
+    }
+
+    void updateUI(GameObject item)
+    {
+        try
+        {
+            inventoryUI.transform.GetChild(1).GetChild(currentlySelected + 1).GetChild(0).GetComponent<InventorySlot>().setItem(item.GetComponent<Weapon>().getSprite());
+        }
+        catch
+        {
+
+        }
+
     }
 
     public GameObject removeItemFromInventory()
     {
-        inventory.Remove(currentIndex, out GameObject removedItem);
-        currentIndex--;
+        if(inventory.TryGetValue(currentlySelected, out GameObject item))
+        {
+            if(item == null)
+            {
+                return null;
+            }
+        }
+        inventory.Remove(currentlySelected, out GameObject removedItem);
+        updateUI();
         isFull = false;
         activateInv();
         return removedItem;
@@ -35,19 +61,28 @@ public class Inventory : MonoBehaviour
 
     void activateInv()
     {
-        for (int i = 0; i < inventory.Count; i++)
+        print(currentlySelected + " " + inventory.Count);
+        for (int i = 0; i < maxInventorySize; i++)
         {
             inventory.TryGetValue(i, out GameObject item);
-            if (i == currentIndex)
+            if(item != null)
             {
-                item.SetActive(true);
+                if (i == currentlySelected)
+                {
+                    item.SetActive(true);
+                }
+                else
+                {
+                    item.SetActive(false);
+                }
             }
-            else
-            {
-                item.SetActive(false);
-            }
-
         }
+        try
+        {
+            Transform slotSelector = inventoryUI.transform.GetChild(1).GetChild(0);
+            slotSelector.position = inventoryUI.transform.GetChild(1).GetChild(currentlySelected + 1).position;
+        }
+        catch{}
     }
 
     public int getNumberItems()
@@ -63,20 +98,21 @@ public class Inventory : MonoBehaviour
         {
             if (mouseWheel.y < 0)
             {
-                currentIndex--;
-                if (currentIndex < 0)
+                currentlySelected--;
+                if (currentlySelected < 0)
                 {
-                    currentIndex = inventory.Count - 1;
+                    currentlySelected = maxInventorySize - 1;
                 }
             }
             else
             {
-                currentIndex++;
-                if(currentIndex > inventory.Count -1 )
+                currentlySelected++;
+                if(currentlySelected > maxInventorySize -1 )
                 {
-                    currentIndex = 0;
+                    currentlySelected = 0;
                 }
             }
+            
             activateInv();
         }
         if (Input.anyKeyDown)
@@ -86,7 +122,11 @@ public class Inventory : MonoBehaviour
             bool r = int.TryParse(keyPressed, out n);
             if (r)
             {
-                currentIndex = n - 1;
+                if(n == 0)
+                {
+                    return;
+                }
+                currentlySelected = n - 1;
                 
                 activateInv();
 

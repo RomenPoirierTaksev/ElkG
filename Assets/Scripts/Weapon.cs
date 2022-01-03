@@ -8,6 +8,7 @@ public class Weapon : MonoBehaviour
     float damage;
     float range;
     Vector3 handPos;
+    public Sprite weaponInventoryImage;
     
     void Start()
     {   
@@ -16,6 +17,12 @@ public class Weapon : MonoBehaviour
         {
             damage = 25f;
             range = 3f;
+            handPos = new Vector3(gameObject.transform.localRotation.x - 65, 0, 85);
+        }
+        else if (weaponName.ToLower().Contains("pebble"))
+        {
+            damage = 5f;
+            range = 1f;
             handPos = new Vector3(gameObject.transform.localRotation.x - 65, 0, 85);
         }
         else
@@ -38,5 +45,10 @@ public class Weapon : MonoBehaviour
     public Vector3 getHandPos()
     {
         return handPos;
+    }
+
+    public Sprite getSprite()
+    {
+        return weaponInventoryImage;
     }
 }

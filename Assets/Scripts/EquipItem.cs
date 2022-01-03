@@ -34,17 +34,20 @@ public class EquipItem : MonoBehaviour
 
             if (hit.collider.tag.Equals("Equipable"))
             {
-                hit.rigidbody.velocity = Vector3.zero;
-                hit.transform.parent = rightHand.transform.parent;
-                hit.transform.localPosition = rightHand.transform.localPosition;
-                hit.transform.localRotation = Quaternion.Euler(hit.transform.gameObject.GetComponent<Weapon>().getHandPos());
-                hit.rigidbody.useGravity = false;
-                hit.transform.parent = rightHand.transform;
-                hit.transform.localPosition = hit.transform.localPosition + Vector3.up * 0.07120773f + Vector3.forward * 0.05999654f;
-                hit.collider.enabled = false;
-                itemEquiped = true;
                 equipedItem = hit.transform.gameObject;
-                inventory.addItemToInventory(equipedItem);
+                if (inventory.addItemToInventory(equipedItem))
+                {
+                    hit.rigidbody.velocity = Vector3.zero;
+                    hit.transform.parent = rightHand.transform.parent;
+                    hit.transform.localPosition = rightHand.transform.localPosition;
+                    hit.transform.localRotation = Quaternion.Euler(hit.transform.gameObject.GetComponent<Weapon>().getHandPos());
+                    hit.rigidbody.useGravity = false;
+                    hit.transform.parent = rightHand.transform;
+                    hit.transform.localPosition = hit.transform.localPosition + Vector3.up * 0.07120773f + Vector3.forward * 0.05999654f;
+                    hit.collider.enabled = false;
+                    itemEquiped = true;
+
+                }
                 //Debug.Log("Equipped");
             }
             else
@@ -60,15 +63,15 @@ public class EquipItem : MonoBehaviour
 
     private void unequipItem()
     {
-        if(equipedItem != null)
+        equipedItem = inventory.removeItemFromInventory();
+        if (equipedItem != null)
         {
             itemEquiped = false;
             equipedItem.transform.parent = null;
             equipedItem.GetComponent<Rigidbody>().useGravity = true;
             equipedItem.GetComponent<Collider>().enabled = true;
             equipedItem.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, 70, 300));
-            equipedItem = inventory.removeItemFromInventory();
-            //Debug.Log("Dropped");
+            Debug.Log("Dropped");
         }
 
     }
