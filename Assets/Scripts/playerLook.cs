@@ -16,8 +16,8 @@ public class playerLook : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
         tr = gameObject.GetComponent<Transform>();
         inventory = gameObject.GetComponent<Inventory>();
 
