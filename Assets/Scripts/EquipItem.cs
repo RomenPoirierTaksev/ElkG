@@ -9,6 +9,7 @@ public class EquipItem : MonoBehaviour
     public static bool itemEquiped = false;
     public static GameObject equipedItem;
     Inventory inventory;
+    public GameObject viewPos;
 
 
     void Start()
@@ -17,15 +18,19 @@ public class EquipItem : MonoBehaviour
         inventory = gameObject.GetComponent<Inventory>();
     }
 
+    private void Update()
+    {
+        Debug.DrawRay(viewPos.transform.position, viewPos.transform.forward * 10000f, Color.red);
+    }
     private void equipItem()
     {
         Transform transform = Camera.main.GetComponent<Transform>();
-        int layerMask = 1 << 10;
-        layerMask = ~layerMask;
+        int layerMask = 1 << 9;
+        //layerMask = ~layerMask;
 
-        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 6f, layerMask))
+        if (Physics.Raycast(viewPos.transform.position, viewPos.transform.forward, out hit, 10000f, layerMask))
         {
-            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.red);
+            print(hit.transform.name);
 
             if (inventory.getNumberItems() == inventory.maxInventorySize)
             {

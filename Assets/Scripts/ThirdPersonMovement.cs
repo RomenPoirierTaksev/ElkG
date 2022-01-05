@@ -10,27 +10,95 @@ public class ThirdPersonMovement : MonoBehaviour
 
     public float speed = 6f;
 
-    public float turnSmoothTime = 0.1f;
-    float turnSmoothVelocity;
+    public float mouseSensitivity = 3f;
+
+    public GameObject viewPoint;
+
+    bool inverted = false;
+
+    public Transform groundCheck;
+    public float groundDistance = 0.4f;
+    public LayerMask groundLayerMask;
+    bool isGrounded;
+
+    Vector2 forceVector;
+    Vector3 velocity;
+
+    public float jumpHeight = 2;
+    public float gravity = -9.81f;
+
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+    }
 
     // Update is called once per frame
     void Update()
     {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundLayerMask);
+
+        if (velocity.y < -15f)
+        {
+            if (isGrounded)
+            {
+                velocity.y = -2f;
+            }
+
+        }
+        else
+        {
+            velocity.y += gravity * Time.deltaTime;
+        }
+
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
-        Vector3 direction = new Vector3(horizontal, 0, vertical).normalized;
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        if(direction.magnitude >= 0.1)
+        if (!inverted) mouseY = -mouseY;
+
+        viewPoint.transform.rotation *= Quaternion.AngleAxis(mouseX, Vector3.up);
+
+        viewPoint.transform.rotation *= Quaternion.AngleAxis(mouseY, Vector3.right);
+
+        var angles = viewPoint.transform.localEulerAngles;
+        angles.z = 0;
+
+        var angle = viewPoint.transform.localEulerAngles.x;
+
+        if(angle > 180 && angle < 340)
         {
-
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
-
-            Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            controller.Move(moveDir.normalized * speed * Time.deltaTime);
+            angles.x = 340;
 
         }
+        else if(angle < 180 && angle > 40)
+        {
+            angles.x = 40;
+        }
+
+        viewPoint.transform.localEulerAngles = angles;
+        transform.rotation = Quaternion.Euler(0, viewPoint.transform.rotation.eulerAngles.y, 0);
+        viewPoint.transform.localEulerAngles = new Vector3(angles.x, 0, 0);
+
+        Vector3 direction = Vector3.zero;
+        direction += horizontal * transform.right;
+        direction += vertical * transform.forward;
+
+        direction.Normalize();
+        if (direction.magnitude >= 0.1)
+        {
+            controller.Move(direction * speed * Time.deltaTime);
+
+        }
+
+        if (isGrounded && Input.GetButtonDown("Jump"))
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        }
+
+        controller.Move(velocity * Time.deltaTime);
+
+
     }
 }
