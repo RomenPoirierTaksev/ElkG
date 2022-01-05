@@ -16,11 +16,11 @@ public class PlayerCombat : MonoBehaviour
             anim.SetTrigger("Swing");
             //Debug.Log("swung");
 
-            Weapon weapon = null;
+            itemPickup weapon = null;
 
             foreach (Transform child in rightHand.transform)
             {
-                weapon = child.GetComponent<Weapon>();
+                weapon = child.GetComponent<itemPickup>();
             }
 
             if(weapon != null)

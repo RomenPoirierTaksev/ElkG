@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class EquipItem : MonoBehaviour
 {
-    RaycastHit hit;
     public GameObject rightHand;
     public static bool itemEquiped = false;
     public static GameObject equipedItem;
@@ -14,56 +13,33 @@ public class EquipItem : MonoBehaviour
 
     void Start()
     {
-        GameEvents.instance.onToolPickUp += equipItem;
+        GameEvents.instance.onItemPickUp += equipItem;
+        GameEvents.instance.onItemDrop += unequipItem;
         inventory = gameObject.GetComponent<Inventory>();
-    }
-
-    private void Update()
-    {
-        Debug.DrawRay(viewPos.transform.position, viewPos.transform.forward * 10000f, Color.red);
     }
     private void equipItem()
     {
-        Transform transform = Camera.main.GetComponent<Transform>();
-        int layerMask = 1 << 9;
-        //layerMask = ~layerMask;
 
-        if (Physics.Raycast(viewPos.transform.position, viewPos.transform.forward, out hit, 10000f, layerMask))
+        if (inventory.getNumberItems() == inventory.maxInventorySize)
         {
-            print(hit.transform.name);
-
-            if (inventory.getNumberItems() == inventory.maxInventorySize)
-            {
-                return;
-            }
-
-            if (hit.collider.tag.Equals("Equipable"))
-            {
-                equipedItem = hit.transform.gameObject;
-                if (inventory.addItemToInventory(equipedItem))
-                {
-                    hit.rigidbody.velocity = Vector3.zero;
-                    hit.transform.parent = rightHand.transform.parent;
-                    hit.transform.localPosition = rightHand.transform.localPosition;
-                    hit.transform.localRotation = Quaternion.Euler(hit.transform.gameObject.GetComponent<Weapon>().getHandPos());
-                    hit.rigidbody.useGravity = false;
-                    hit.transform.parent = rightHand.transform;
-                    hit.transform.localPosition = hit.transform.localPosition + Vector3.up * 0.07120773f + Vector3.forward * 0.05999654f;
-                    hit.collider.enabled = false;
-                    itemEquiped = true;
-
-                }
-                //Debug.Log("Equipped");
-            }
-            else
-            {
-                unequipItem();
-            }
+            return;
         }
-        else
+
+        equipedItem = GetComponent<playerLook>().getCurrentItem();
+        if (equipedItem != null && inventory.addItemToInventory(equipedItem))
         {
-            unequipItem();
+            Rigidbody itemRb = equipedItem.GetComponent<Rigidbody>();
+            itemRb.velocity = Vector3.zero;
+            equipedItem.transform.parent = rightHand.transform.parent;
+            equipedItem.transform.localPosition = rightHand.transform.localPosition;
+            equipedItem.transform.localRotation = Quaternion.Euler(equipedItem.GetComponent<itemPickup>().getHandPos());
+            itemRb.useGravity = false;
+            equipedItem.transform.parent = rightHand.transform;
+            equipedItem.transform.localPosition = equipedItem.transform.localPosition + Vector3.up * 0.07120773f + Vector3.forward * 0.05999654f;
+            equipedItem.GetComponent<Collider>().enabled = false;
+            itemEquiped = true;
         }
+
     }
 
     private void unequipItem()
@@ -76,7 +52,6 @@ public class EquipItem : MonoBehaviour
             equipedItem.GetComponent<Rigidbody>().useGravity = true;
             equipedItem.GetComponent<Collider>().enabled = true;
             equipedItem.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, 70, 300));
-            Debug.Log("Dropped");
         }
 
     }

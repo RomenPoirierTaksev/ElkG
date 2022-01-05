@@ -12,16 +12,25 @@ public class GameEvents : MonoBehaviour
         instance = this;
     }
 
-    public event Action onToolPickUp;
-    public void ToolPickUp()
+    public event Action onItemPickUp;
+    public void itemPickUp()
     {
-        if(onToolPickUp != null)
+        if(onItemPickUp != null)
         {
-            onToolPickUp();
+            onItemPickUp();
         }
     }
 
-    
+    public event Action onItemDrop;
+    public void itemDrop()
+    {
+        if (onItemDrop != null)
+        {
+            onItemDrop();
+        }
+    }
+
+
 
     /**
     public event Action onDamageTaken;

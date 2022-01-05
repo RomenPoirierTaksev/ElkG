@@ -34,7 +34,7 @@ public class Inventory : MonoBehaviour
     {
         try
         {
-            inventoryUI.transform.GetChild(1).GetChild(currentlySelected + 1).GetChild(0).GetComponent<InventorySlot>().setItem(item.GetComponent<Weapon>().getSprite());
+            inventoryUI.transform.GetChild(1).GetChild(currentlySelected + 1).GetChild(0).GetComponent<InventorySlot>().setItem(item.GetComponent<itemPickup>().getIcon());
         }
         catch
         {
