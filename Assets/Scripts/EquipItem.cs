@@ -68,8 +68,8 @@ public class EquipItem : MonoBehaviour
 
     private void unequipItem()
     {
-        equipedItem = inventory.removeItemFromInventory();
-        if (equipedItem != null)
+        
+        if (inventory.removeItemFromInventory(out GameObject equipedItem))
         {
             itemEquiped = false;
             equipedItem.transform.parent = null;

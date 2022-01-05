@@ -43,20 +43,16 @@ public class Inventory : MonoBehaviour
 
     }
 
-    public GameObject removeItemFromInventory()
+    public bool removeItemFromInventory(out GameObject returnedItem)
     {
-        if(inventory.TryGetValue(currentlySelected, out GameObject item))
-        {
-            if(item == null)
-            {
-                return null;
-            }
-        }
+        //inventory.TryGetValue(currentlySelected, out GameObject item);
+        //returnedItem = item;
         inventory.Remove(currentlySelected, out GameObject removedItem);
+        returnedItem = removedItem;
         updateUI();
         isFull = false;
         activateInv();
-        return removedItem;
+        return returnedItem != null;
     }
 
     void activateInv()
