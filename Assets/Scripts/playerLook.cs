@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro;
 
 public class playerLook : MonoBehaviour
 {
@@ -10,7 +11,13 @@ public class playerLook : MonoBehaviour
     bool interact = false;
     public LayerMask itemLayerMask;
     public EquipItem interaction;
+    public GameObject itemInteractPanel;
+    TextMeshProUGUI itemInteractText;
 
+    private void Awake()
+    {
+        itemInteractText = itemInteractPanel.GetComponentInChildren<TextMeshProUGUI>();
+    }
 
     // Update is called once per frame
     void Update()
@@ -21,18 +28,23 @@ public class playerLook : MonoBehaviour
 
         foreach (Collider collider in colliders)
         {
+            itemInteractPanel.SetActive(true);
+            itemInteractText.text = "Pick up " + collider.name;
+
             if (interact)
             {
+                interact = false;
                 if (interaction.equipItem(collider.gameObject))
                 {
-                    print("Picked up " + collider.name);
+                    itemInteractText.text = "Picked up " + collider.name;
                 }
-                else
-                {
-                    print("Could not pick up " + collider.name);
-                }
-                interact = false;
             }
+        }
+
+        if(colliders.Length == 0)
+        {
+            itemInteractPanel.SetActive(false);
+            itemInteractText.text = "";
         }
 
         if(interact && colliders.Length == 0)
