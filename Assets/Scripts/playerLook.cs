@@ -5,38 +5,40 @@ using UnityEngine.Events;
 
 public class playerLook : MonoBehaviour
 {
-    bool pickedUp = false;
-    public float pickUpDistance = 5f;
-    public Collider itemCheck;
-    GameObject currentItem = null;
     
+    public float pickUpDistance = 5f;
+    bool interact = false;
+    public LayerMask itemLayerMask;
+    public EquipItem interaction;
+
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("e") && pickedUp)
-        {
-            GameEvents.instance.itemDrop();
-            pickedUp = false;
-        }
-    }
+        interact = Input.GetKeyDown("e");
 
-    private void OnTriggerStay(Collider collision)
-    {
-        
-        print("Pick up " + collision.transform.name);
-        if (Input.GetKeyDown("e") && collision.tag.Equals("Equipable"))
-        {
-            GameEvents.instance.itemPickUp();
-            currentItem = collision.gameObject;
-            print("Picked up " + collision.transform.name);
-            pickedUp = true;
-        }
-    }
+        Collider[] colliders = Physics.OverlapSphere(transform.position, pickUpDistance, itemLayerMask);
 
-    public GameObject getCurrentItem()
-    {
-        return currentItem;
+        foreach (Collider collider in colliders)
+        {
+            if (interact)
+            {
+                if (interaction.equipItem(collider.gameObject))
+                {
+                    print("Picked up " + collider.name);
+                }
+                else
+                {
+                    print("Could not pick up " + collider.name);
+                }
+                interact = false;
+            }
+        }
+
+        if(interact && colliders.Length == 0)
+        {
+            interaction.unequipItem();
+        }
     }
 
     private void OnDrawGizmos()

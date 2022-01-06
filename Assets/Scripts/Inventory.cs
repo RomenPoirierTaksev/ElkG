@@ -57,7 +57,7 @@ public class Inventory : MonoBehaviour
 
     void activateInv()
     {
-        print(currentlySelected + " " + inventory.Count);
+        //print(currentlySelected + " " + inventory.Count);
         for (int i = 0; i < maxInventorySize; i++)
         {
             inventory.TryGetValue(i, out GameObject item);

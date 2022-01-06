@@ -14,7 +14,7 @@ public class ThirdPersonMovement : MonoBehaviour
 
     public GameObject viewPoint;
 
-    bool inverted = false;
+    public bool inverted = false;
 
     public Transform groundCheck;
     public float groundDistance = 0.4f;

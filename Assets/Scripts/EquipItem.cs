@@ -13,19 +13,16 @@ public class EquipItem : MonoBehaviour
 
     void Start()
     {
-        GameEvents.instance.onItemPickUp += equipItem;
-        GameEvents.instance.onItemDrop += unequipItem;
         inventory = gameObject.GetComponent<Inventory>();
     }
-    private void equipItem()
+    public bool equipItem(GameObject equipedItem)
     {
 
         if (inventory.getNumberItems() == inventory.maxInventorySize)
         {
-            return;
+            return false ;
         }
 
-        equipedItem = GetComponent<playerLook>().getCurrentItem();
         if (equipedItem != null && inventory.addItemToInventory(equipedItem))
         {
             Rigidbody itemRb = equipedItem.GetComponent<Rigidbody>();
@@ -38,11 +35,12 @@ public class EquipItem : MonoBehaviour
             equipedItem.transform.localPosition = equipedItem.transform.localPosition + Vector3.up * 0.07120773f + Vector3.forward * 0.05999654f;
             equipedItem.GetComponent<Collider>().enabled = false;
             itemEquiped = true;
+            return true;
         }
-
+        return false;
     }
 
-    private void unequipItem()
+    public void unequipItem()
     {
         
         if (inventory.removeItemFromInventory(out GameObject equipedItem))
