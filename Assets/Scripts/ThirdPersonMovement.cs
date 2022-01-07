@@ -52,10 +52,10 @@ public class ThirdPersonMovement : MonoBehaviour
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
-
+        if (!Backpack.instance.backpackOpen) { 
+        
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
-
         if (!inverted) mouseY = -mouseY;
 
         viewPoint.transform.rotation *= Quaternion.AngleAxis(mouseX, Vector3.up);
@@ -67,12 +67,12 @@ public class ThirdPersonMovement : MonoBehaviour
 
         var angle = viewPoint.transform.localEulerAngles.x;
 
-        if(angle > 180 && angle < 340)
+        if (angle > 180 && angle < 340)
         {
             angles.x = 340;
 
         }
-        else if(angle < 180 && angle > 40)
+        else if (angle < 180 && angle > 40)
         {
             angles.x = 40;
         }
@@ -80,7 +80,7 @@ public class ThirdPersonMovement : MonoBehaviour
         viewPoint.transform.localEulerAngles = angles;
         transform.rotation = Quaternion.Euler(0, viewPoint.transform.rotation.eulerAngles.y, 0);
         viewPoint.transform.localEulerAngles = new Vector3(angles.x, 0, 0);
-
+    }
         Vector3 direction = Vector3.zero;
         direction += horizontal * transform.right;
         direction += vertical * transform.forward;

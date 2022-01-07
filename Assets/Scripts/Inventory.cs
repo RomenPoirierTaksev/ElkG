@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
     Dictionary<int, GameObject> inventory = new Dictionary<int, GameObject>();
+    
     public int maxInventorySize = 10;
-    public bool isFull = false;
     int currentlySelected = 0;
     public Canvas inventoryUI;
 
@@ -50,7 +50,6 @@ public class Inventory : MonoBehaviour
         inventory.Remove(currentlySelected, out GameObject removedItem);
         returnedItem = removedItem;
         updateUI();
-        isFull = false;
         activateInv();
         return returnedItem != null;
     }
@@ -88,6 +87,7 @@ public class Inventory : MonoBehaviour
 
     void Update()
     {
+        
         
         Vector2 mouseWheel = Input.mouseScrollDelta;
         if (mouseWheel != Vector2.zero)

@@ -22,4 +22,13 @@ public class InventorySlot:MonoBehaviour
         item.sprite = null;
         item.color = new Color(255, 255, 255, 0);
     }
+
+    public string getSpriteName()
+    {
+        if(item.sprite != null)
+        {
+            return item.sprite.name;
+        }
+        return "";
+    }
 }

@@ -23,7 +23,7 @@ public class EquipItem : MonoBehaviour
             return false ;
         }
 
-        if (equipedItem != null && inventory.addItemToInventory(equipedItem))
+        if (equipedItem != null && Backpack.instance.addItemToInventory(equipedItem) && Backpack.instance.currentlyEquiped == null)
         {
             Rigidbody itemRb = equipedItem.GetComponent<Rigidbody>();
             itemRb.velocity = Vector3.zero;
