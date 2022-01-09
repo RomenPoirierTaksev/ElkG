@@ -23,6 +23,12 @@ public class InventorySlot:MonoBehaviour
         item.color = new Color(255, 255, 255, 0);
     }
 
+    public Sprite getIcon()
+    {
+        if(item.sprite != null) return item.sprite;
+        return null;
+    }
+
     public string getSpriteName()
     {
         if(item.sprite != null)

@@ -12,7 +12,9 @@ public class Backpack : MonoBehaviour
     GameObject bp;
     public Canvas inventoryUI;
     public GameObject currentlyEquiped;
+    Transform previousButton;
     Transform clickedButton;
+    int numOfClicks = 0;
     
 
     // Start is called before the first frame update
@@ -55,8 +57,10 @@ public class Backpack : MonoBehaviour
 
     public void itemClick(Button button)
     {
-
+        previousButton = clickedButton;
         clickedButton = button.transform.GetChild(0).transform;
+        modifyItemSlot();
+        print("clicked" + button.name);
     }
 
     void updateUI()
@@ -77,14 +81,49 @@ public class Backpack : MonoBehaviour
         }
 
     }
+
+    void modifyItemSlot()
+    {
+        if (numOfClicks == 2)
+        {
+            if (previousButton != null && clickedButton != previousButton && previousButton.gameObject.GetComponentInChildren<InventorySlot>().getIcon() != null)
+            {
+                InventorySlot one = clickedButton.gameObject.GetComponentInChildren<InventorySlot>();
+                InventorySlot two = previousButton.gameObject.GetComponentInChildren<InventorySlot>();
+                one.setItem(two.getIcon());
+                two.removeItem();
+                two.transform.localPosition = Vector3.zero;
+            }
+            else
+            {
+                print("dropped item");
+            }
+            numOfClicks = 0;
+            clickedButton = null;
+            previousButton = null;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if(clickedButton != null)
+        if (backpackOpen && Input.GetMouseButtonDown(0))
         {
-            clickedButton.position = Input.mousePosition;
+            if(numOfClicks >= 2)
+            {
+                clickedButton = null;
+                previousButton = null;
+                numOfClicks = 0;
+            }
+            else numOfClicks++;
         }
 
+        if (clickedButton != null && clickedButton.gameObject.GetComponent<InventorySlot>().getIcon() != null)
+        {
+            //not finished yet
+            //clickedButton.gameObject.GetComponent<Image>();
+            clickedButton.position = Input.mousePosition + Vector3.forward * 0.5f;
+        }
 
         if (Input.GetKeyDown("i") && bp != null)
         {
@@ -93,6 +132,11 @@ public class Backpack : MonoBehaviour
             Cursor.lockState = backpackOpen ? CursorLockMode.None : CursorLockMode.Locked;
             if(clickedButton != null)
             {
+                if(previousButton != null)
+                {
+                    previousButton.localPosition = Vector3.zero;
+                    previousButton = null;
+                }
                 clickedButton.localPosition = Vector3.zero;
                 clickedButton = null;
             }
