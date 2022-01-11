@@ -79,6 +79,7 @@ public class Backpack : MonoBehaviour
         previousButton = clickedButton;
         clickedButton = button.transform.GetChild(0).transform;
         modifyItemSlot();
+        canDrop = false;
         //print("clicked" + button.name);
     }
 
