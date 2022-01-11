@@ -46,11 +46,6 @@ public class playerLook : MonoBehaviour
             itemInteractPanel.SetActive(false);
             itemInteractText.text = "";
         }
-
-        if(interact && colliders.Length == 0)
-        {
-            interaction.unequipItem();
-        }
     }
 
     private void OnDrawGizmos()

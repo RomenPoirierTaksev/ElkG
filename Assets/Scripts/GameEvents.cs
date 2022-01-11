@@ -30,6 +30,16 @@ public class GameEvents : MonoBehaviour
         }
     }
 
+    public event Action onbackpackExit;
+
+    public void backpackExit()
+    {
+        if(onbackpackExit != null)
+        {
+            onbackpackExit();
+        }
+    }
+
 
 
     /**

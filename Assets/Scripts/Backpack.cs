@@ -15,12 +15,15 @@ public class Backpack : MonoBehaviour
     Transform previousButton;
     Transform clickedButton;
     int numOfClicks = 0;
-    
+    bool canDrop = false;
+
 
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
+
+        GameEvents.instance.onbackpackExit += allowDrop;
 
         try
         {
@@ -30,6 +33,11 @@ public class Backpack : MonoBehaviour
         catch { }
 
         
+    }
+
+    void allowDrop()
+    {
+        canDrop = true;
     }
 
     public bool addItemToInventory(GameObject item)
@@ -55,17 +63,33 @@ public class Backpack : MonoBehaviour
         return returnedItem != null;
     }
 
+    public void removeItemFromInventory()
+    {
+        if (clickedButton == null) return;
+        bool s = backpack.Remove(int.Parse(clickedButton.name.Substring(clickedButton.name.Length - 1)));
+        if (s)
+        {
+            updateUI();
+            canDrop = false;
+        }
+    }
+
     public void itemClick(Button button)
     {
         previousButton = clickedButton;
         clickedButton = button.transform.GetChild(0).transform;
         modifyItemSlot();
-        print("clicked" + button.name);
+        //print("clicked" + button.name);
     }
 
     void updateUI()
     {
-        //inventoryUI.transform.GetChild(1).GetChild(currentlySelected + 1).GetChild(0).GetComponent<InventorySlot>().removeItem();
+        try
+        {
+            print(inventoryUI.transform.GetChild(3).GetChild(0));
+            inventoryUI.transform.GetChild(3).GetChild(0).GetComponentInChildren<InventorySlot>().removeItem();
+        }
+        catch { }
     }
 
     void updateUI(GameObject item)
@@ -90,19 +114,28 @@ public class Backpack : MonoBehaviour
             {
                 InventorySlot one = clickedButton.gameObject.GetComponentInChildren<InventorySlot>();
                 InventorySlot two = previousButton.gameObject.GetComponentInChildren<InventorySlot>();
-                one.setItem(two.getIcon());
-                two.removeItem();
-                two.transform.localPosition = Vector3.zero;
+                int oldIndex = int.Parse(previousButton.name.Substring(previousButton.name.Length - 1));
+                int newIndex = int.Parse(clickedButton.name.Substring(clickedButton.name.Length - 1));
+                
+                if (backpack.Remove(oldIndex, out GameObject v)) 
+                { 
+                    backpack.Add(newIndex, v);
+                    one.setItem(two.getIcon());
+                    two.removeItem();
+                    two.transform.localPosition = Vector3.zero;
+                }
             }
             else
             {
-                print("dropped item");
+                if(canDrop) removeItemFromInventory();
             }
             numOfClicks = 0;
             clickedButton = null;
             previousButton = null;
         }
     }
+
+
 
     // Update is called once per frame
     void Update()
@@ -116,11 +149,11 @@ public class Backpack : MonoBehaviour
                 numOfClicks = 0;
             }
             else numOfClicks++;
+
         }
 
         if (clickedButton != null && clickedButton.gameObject.GetComponent<InventorySlot>().getIcon() != null)
         {
-            //not finished yet
             Transform parent = clickedButton.parent;
             parent.SetAsFirstSibling();
             clickedButton.position = Input.mousePosition;
