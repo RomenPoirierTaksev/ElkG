@@ -121,8 +121,9 @@ public class Backpack : MonoBehaviour
         if (clickedButton != null && clickedButton.gameObject.GetComponent<InventorySlot>().getIcon() != null)
         {
             //not finished yet
-            //clickedButton.gameObject.GetComponent<Image>();
-            clickedButton.position = Input.mousePosition + Vector3.forward * 0.5f;
+            Transform parent = clickedButton.parent;
+            parent.SetAsFirstSibling();
+            clickedButton.position = Input.mousePosition;
         }
 
         if (Input.GetKeyDown("i") && bp != null)
