@@ -11,7 +11,9 @@ public class Backpack : MonoBehaviour
     public int maxInventorySize = 6;
     GameObject bp;
     public Canvas inventoryUI;
-    public GameObject currentlyEquiped;
+
+    GameObject currentlyEquiped;
+
     Transform previousButton;
     Transform clickedButton;
     int numOfClicks = 0;
@@ -40,6 +42,12 @@ public class Backpack : MonoBehaviour
         canDrop = true;
     }
 
+    public bool getCurrentEquiped(out GameObject eq)
+    {
+        eq = currentlyEquiped;
+        return currentlyEquiped != null;
+    }
+
     public bool addItemToInventory(GameObject item)
     {
         if (backpack.Count < maxInventorySize)
@@ -49,6 +57,7 @@ public class Backpack : MonoBehaviour
                 if (currentlyEquiped != null) currentlyEquiped = item;
                 //print(backpack.Count);
                 updateUI(item);
+                updateCurrentlyEquiped();
                 return true;
             }
         }
@@ -107,6 +116,27 @@ public class Backpack : MonoBehaviour
 
     }
 
+    void updateCurrentlyEquiped()
+    {
+        if (backpack.TryGetValue(0, out GameObject eq)) currentlyEquiped = eq;
+        for (int i = 0; i < maxInventorySize; i++)
+        {
+            backpack.TryGetValue(i, out GameObject item);
+            if (item != null)
+            {
+                if (i == 0)
+                {
+                    item.SetActive(true);
+                }
+                else
+                {
+                    item.SetActive(false);
+                }
+            }
+        }
+    }
+
+
     void modifyItemSlot()
     {
         if (numOfClicks == 2)
@@ -124,11 +154,16 @@ public class Backpack : MonoBehaviour
                     one.setItem(two.getIcon());
                     two.removeItem();
                     two.transform.localPosition = Vector3.zero;
+                    updateCurrentlyEquiped();
                 }
             }
             else
             {
-                if(canDrop) removeItemFromInventory();
+                if (canDrop)
+                {
+                    GameEvents.instance.itemDrop();
+                    removeItemFromInventory();
+                }
             }
             numOfClicks = 0;
             clickedButton = null;

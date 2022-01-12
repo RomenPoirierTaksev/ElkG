@@ -5,52 +5,59 @@ using UnityEngine;
 public class EquipItem : MonoBehaviour
 {
     public GameObject rightHand;
-    public static bool itemEquiped = false;
-    public static GameObject equipedItem;
+    GameObject currentlyEquipedItem;
     Inventory inventory;
     public GameObject viewPos;
 
+    /**
+     * THIS ENTIRE CLASS IS CURRENTLY BEING REFACTORED IM FIGURING IT OUT
+     * 
+     */
 
     void Start()
     {
         inventory = gameObject.GetComponent<Inventory>();
+        GameEvents.instance.onItemDrop += unequipItem;
     }
+
+    
     public bool equipItem(GameObject equipedItem)
     {
-
-        if (inventory.getNumberItems() == inventory.maxInventorySize)
+        if (inventory.getNumberItems() == inventory.maxInventorySize) return false;
+        if (Backpack.instance.addItemToInventory(equipedItem))
         {
-            return false ;
-        }
-
-        if (equipedItem != null && Backpack.instance.addItemToInventory(equipedItem) && Backpack.instance.currentlyEquiped == null)
-        {
-            Rigidbody itemRb = equipedItem.GetComponent<Rigidbody>();
+            if (!setCurrentlyEquipedItem()) return false;
+            Rigidbody itemRb = currentlyEquipedItem.GetComponent<Rigidbody>();
             itemRb.velocity = Vector3.zero;
-            equipedItem.transform.parent = rightHand.transform.parent;
-            equipedItem.transform.localPosition = rightHand.transform.localPosition;
-            equipedItem.transform.localRotation = Quaternion.Euler(equipedItem.GetComponent<itemPickup>().getHandPos());
+            currentlyEquipedItem.transform.parent = rightHand.transform.parent;
+            currentlyEquipedItem.transform.localPosition = rightHand.transform.localPosition;
+            currentlyEquipedItem.transform.localRotation = Quaternion.Euler(currentlyEquipedItem.GetComponent<itemPickup>().getHandPos());
             itemRb.useGravity = false;
-            equipedItem.transform.parent = rightHand.transform;
-            equipedItem.transform.localPosition = equipedItem.transform.localPosition + Vector3.up * 0.07120773f + Vector3.forward * 0.05999654f;
-            equipedItem.GetComponent<Collider>().enabled = false;
-            itemEquiped = true;
+            currentlyEquipedItem.transform.parent = rightHand.transform;
+            currentlyEquipedItem.transform.localPosition = currentlyEquipedItem.transform.localPosition + Vector3.up * 0.07120773f + Vector3.forward * 0.05999654f;
+            currentlyEquipedItem.GetComponent<Collider>().enabled = false;
             return true;
         }
         return false;
     }
 
-    public void unequipItem()
+    bool setCurrentlyEquipedItem()
     {
-        
-        if (inventory.removeItemFromInventory(out GameObject equipedItem))
-        {
-            itemEquiped = false;
-            equipedItem.transform.parent = null;
-            equipedItem.GetComponent<Rigidbody>().useGravity = true;
-            equipedItem.GetComponent<Collider>().enabled = true;
-            equipedItem.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, 70, 300));
+        if (Backpack.instance.getCurrentEquiped(out GameObject eq))
+        { 
+            currentlyEquipedItem = eq;
+            return true;
         }
+        return false;
+    }
+
+    void unequipItem()
+    {
+        if (!setCurrentlyEquipedItem()) return;
+        currentlyEquipedItem.transform.parent = null;
+        currentlyEquipedItem.GetComponent<Rigidbody>().useGravity = true;
+        currentlyEquipedItem.GetComponent<Collider>().enabled = true;
+        currentlyEquipedItem.GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, 70, 300));
 
     }
 }
